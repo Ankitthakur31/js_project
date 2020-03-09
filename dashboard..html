@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./custom.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="./controller.build.js"></script>
+    <script>
+        window.onload = function(){
+            myObj = new Admin();
+            let stuInfo = myObj.getStudent();
+            // console.log(stuInfo);
+            loadTable(stuInfo);
+            document.getElementById('btnsave').addEventListener('click', function() {
+                // JSON object 
+                let studKey = myObj.keyGenerate(document.getElementById('txtname').value);
+                console.log(studKey);
+                
+                var stuInfo1 = {
+                    stuKey : studKey,
+                    stuName: document.getElementById('txtname').value,
+                    stuEmail: document.getElementById('txtemail').value,
+                    stuAddress : document.getElementById('txtaddress').value,
+                    stuCerti : [],
+                    special : [],
+                    stuGender: document.getElementById('txtgender').value,
+                    stuRole: document.getElementById('txtrole').value
+                };
+                if(stuInfo1.stuGender == 0 || stuInfo1.stuRole == 0 || stuInfo1.stuName  == "" || stuInfo1.stuEmail  == "" || stuInfo1.stuAddress  == "" ){
+                  alert("All the fields are mandatory")
+                  clearTable();
+                }else{
+                  if(myObj.emailValid(stuInfo1.stuEmail)){
+                    alert("Email address exist");
+                    clearTable();
+                  }else{
+                    let stuTab = myObj.addStudent(stuInfo1);
+                    //console.log(JSON.stringify(stuTab));
+                    clearTable();
+                    loadTable(stuTab);
+                  }
+                }
+            }, true);
+
+            
+            document.getElementById('searchbox').addEventListener('keyup', function() {
+                               
+                if(this.value == ""){
+                    var stuInfor = myObj.getStudent();
+                    console.log(stuInfor);
+                    
+                    loadTable(stuInfor);
+                }
+                else{
+                show = myObj.search(this.value); // in the scope of the 
+                loadTable(show);
+              }
+            }, true);
+
+            document.getElementById('btnnew').addEventListener('click' , function(){
+              clearTable();
+            }  , true);
+
+            function clearTable(){
+              let input = document.getElementsByClassName("c1");
+              for(i in input){
+                input[i].value=" ";
+              }
+            }
+            this.checkEmail = function(){
+              let res =  document.getElementById('txtemail').value;
+              console.log(res);
+              let che = myObj.emailValid(res)
+              if(che){
+                document.getElementById('txtemail').style.color = "red";
+              }else{
+                document.getElementById('txtemail').style.color = "black";
+              }
+            }
+        }
+        function loadTable(stuInfo) {
+                tr = "";
+                
+                    stuInfo.forEach((n,i) => {
+                        tr += '<tr><td>' + i + '</td><td>' + n.stuName + '</td><td>' + n.stuEmail + '</td><td>' + n.stuAddress + '</td><td>' + n.stuGender + '</td><td>' + n.stuCerti + '</td><td>' + n.special + '</td><td><input type="button" class="btn btn-primary" id="i" value="Delete" onclick="deleteStu('+i+')"></td></tr>'
+
+                    });
+                    document.getElementById('tbody').innerHTML = tr;
+
+                
+            }
+        function deleteStu(id){
+             stuinfo =  myObj.deleteStudent(id);
+             loadTable(stuinfo);
+            }
+
+            function logout(){
+              sessionStorage.clear();
+              window.location = "./login.html"
+            }
+
+            
+       
+    </script>
+</head>
+<body class="">
+  <div>
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">BlazeJS</a>
+          </div>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Dashboard</a></li>
+            <li><a onclick="logout()">Logout</a></li>
+          </ul>
+        </div>
+    </nav>
+  </div>
+      <div class="container">
+        <h2 style="color: chocolate;">Profile</h2>
+        <div class="panel panel-default">
+          <div class="panel-heading" >
+            <h4 style="width: 50%;margin-right: 0px !important;">User Table</h4>  
+            <input type="text" id="searchbox" class="searchbox form-control" placeholder="Search....." style="width: 20%;float: right;">
+          </div>
+          <div class="panel-body" id="tprofile">
+            <table class="table table-dark">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Address</th>
+                  <th>Gender</th>
+                  <th>Certifications</th>
+                  <th>Special Achievements</th>
+                  <th><button class="btn btn-success" data-toggle="modal" data-target="#addUser"> Add User</button></th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+  
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="container" style="margin-top: 50px;" style="background-color: coral;">
+          
+
+      </div>
+
+
+      
+
+      <div id="addUser" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+      
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add User</h4>
+            </div>
+            <div class="modal-body" >
+              <label > Name*</label>
+            <input type="text" class="c1 form-control" id="txtname">
+
+            <label > Email*</label>
+            <input type="email" class="c1 form-control" id="txtemail" onkeyup="checkEmail()">
+
+            <label > Address*</label>
+            <input type="text" class="c1 form-control" id="txtaddress">
+
+            <div style="margin: 10px; margin-left: 0px;"> 
+            <label > Gender*</label>
+            <select name="Gender" class="form-control" id="txtgender">
+              <option value="0" selected disabled="disabled">Select Gender</option>
+              <option value="Male"> Male</option>
+              <option value="Female"> Female</option>
+            </select>
+
+            <div style="margin: 10px; margin-left: 0px;"> 
+              <label > Roles*</label>
+              <select name="Role" class="form-control" id="txtrole">
+                <option value="0" selected disabled="disabled">Select Role</option>
+                <option value="Admin"> Admin</option>
+                <option value="User"> User</option>
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success"  id="btnsave" data-dismiss="modal">Save</button>
+              <button type="button" class="btn btn-success"  id="btnnew" data-dismiss="modal">Clear</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+      
+        </div>
+      </div> 
+      
+
+</body>
+
+</html>

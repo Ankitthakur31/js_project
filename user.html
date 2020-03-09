@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="./student.build.js"></script>
+    <script>
+        window.onload = function(){
+            userObj = new Student();
+            id = sessionStorage.getItem("id");
+            let stuInfo = userObj.userGet(id);
+            loadTable(id ,stuInfo);
+
+            // Save Button for cetifications
+            document.getElementById('btnsave').addEventListener('click', function() {
+                // JSON object 
+                var check = [ document.getElementById('txtadd').value ];
+                console.log(check);
+                
+                var stucert = [ document.getElementById('txtcertifications').value ];
+                if(stucert == ""){
+                  loadTable(id,stuTab);
+                }else if(check == "Certifications"){
+                  let stuTab = userObj.addCerti(check ,stucert);
+                  clearTable();
+                loadTable(id,stuTab);
+                }else if(check == "Achievements"){
+                  let stuTab = userObj.addCerti(check ,stucert);
+                  clearTable();
+                loadTable(id,stuTab);
+                }  
+            }, true);
+
+            //New button to clear textbox
+            document.getElementById('btnnew').addEventListener('click' , function(){
+              clearTable();
+            }  , true);
+
+            //edit Modal 
+            document.getElementById('btneditcert').addEventListener('click' ,function(){
+              //console.log("hello");
+              
+              var info = userObj.userCerti(id)
+              certi = "";
+              for(let i = 0;i<info.length ; i++){
+                certi += '<p>' + info[i] + '<i class = "dltfloatin fa fa-trash" onclick="dltcerti('+ i +')" data-dismiss="modal"><strong></strong></i></p>'
+              }
+              document.getElementById('modalBody').innerHTML = certi;
+            } , true );
+
+            //edit Modal 
+            document.getElementById('btneditach').addEventListener('click' ,function(){
+              console.log("hello");
+              
+              var info = userObj.userAchive(id)
+              certi = "";
+              for(let i = 0;i<info.length ; i++){
+                certi += '<p>' + info[i] + '<i class = "dltfloatin fa fa-trash" onclick="dltach('+ i +')" data-dismiss="modal"><strong></strong></i></p>'
+              }
+              //<i class = "dltfloatin fa fa-edit" onclick="updatecerti('+ i +')" data-dismiss="modal"><strong></strong></i>
+              document.getElementById('modalBody').innerHTML = certi;
+            } , true );
+
+            document.getElementById('btnaddr').addEventListener('click' ,function(){
+              console.log("hello");
+              
+              var info = userObj.getAddr(id)
+              certi = "";
+              
+                certi += ' <input type="text" value="'+ info +'" id="addredit"><button class="btn btn-primary floatin iconms" onclick="update()" data-dismiss="modal">Save</button>'
+              
+              //<i class = "dltfloatin fa fa-edit" onclick="updatecerti('+ i +')" data-dismiss="modal"><strong></strong></i>
+              document.getElementById('modalBody').innerHTML = certi;
+            } , true );
+
+            
+
+            
+
+            function clearTable(){
+              let input = document.getElementsByClassName("c1");
+              for(i in input){
+                input[i].value=" ";
+              }
+            }
+        }
+        
+
+        //load table for profile
+        function loadTable(id, stuInfo) {
+                tr = "";
+                profile = "";
+                profile += '<button class="btn btn-primary floatin fa fa-plus-square"  data-toggle="modal" data-target="#myModal"> Add</button>'+
+                '<button class="btn btn-warning floatin fa fa-trash"  data-toggle="modal" data-target="#editModal" id="btneditcert"> Cerification</button>'+
+                '<button class="btn btn-warning floatin fa fa-trash"  data-toggle="modal" data-target="#editModal" id="btneditach"> Achievements</button>'+
+                '<p><b>Name :  ' + stuInfo.stuName +'</b></p>'+
+                '<p><b>Email :'+ stuInfo.stuEmail +'</b></p>' + 
+                '<p><b>Address :'+ stuInfo.stuAddress +'<i class="fa fa-edit" data-toggle="modal" data-target="#editModal" id="btnaddr" style="margin-left: 15px;"></i></b></p>' + 
+                '<p><b>Gender :'+ stuInfo.stuGender +'</b></p>'  +
+                '<p><b>Certifications :'+ stuInfo.stuCerti +'</b></p>' + 
+                '<p><b></i>Special Achievements :'+ stuInfo.special +'</b></p>'
+                  
+                document.getElementById('tprofile').innerHTML = profile;
+                document.getElementById('profName').innerHTML = stuInfo.stuName+"'s Profile ";
+
+            
+                }
+
+
+            function logout(){
+              sessionStorage.clear();
+              window.location = "./login.html"
+            }
+
+            function dltcerti(index){
+              let stat = userObj.deleteCertifications(id, index);
+              //console.log(data);
+              if(stat !== ""){
+                alert('Deleted Successfully');
+                loadTable(id ,stat)
+              }else{
+                alert('Not deleted Successfully');
+                
+              }
+               
+            }
+
+            function update(){
+              data = document.getElementById('addredit').value
+              let show = userObj.updateAddr(id,data);
+              loadTable(id , show);
+            }
+
+            function dltach(index){
+              let stat = userObj.deleteAchivements(id, index);
+              //console.log(data);
+              if(stat !== ""){
+                alert('Deleted Successfully');
+                loadTable(id ,stat)
+              }else{
+                alert('Not deleted Successfully');
+                
+              }
+              
+            }
+
+            
+
+            function updatecerti(){
+
+            }
+       
+    </script>
+    <style>
+      .margn{
+        margin : 2px;
+      }
+    </style>
+</head>
+<body class="bodybg">
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">BlazeJS</a>
+          </div>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a onclick="logout()">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="container">
+        <h2 style="color: orange;">Profile</h2>
+        <div class="panel panel-default">
+          <div class="panel-heading" id="profName">
+             
+          </div>
+          <div class="panel-body" id="tprofile">
+          </div>
+        </div>
+      </div>
+
+      <div class="container row" style="margin : auto;">
+        
+      </div>
+
+
+      <!-- Modal  ---------------------------------------------------------------- -->
+      <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+      
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Certifications</h4>
+            </div>
+            <div class="modal-body">
+              <div >
+                  <select name="Gender" class="form-control" id="txtadd">
+                    <option value="Certifications"> Certifications</option>
+                    <option value="Achievements"> Achievements</option>
+                  </select>
+                  <label style="margin-top: 20px;"></label>
+                  <input type="text" class="c1 form-control" id="txtcertifications" style = "margin-bottom  : 20px;">
+                  <div style="margin-bottom: 20px;">
+                      
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success"  id="btnsave" data-dismiss="modal">Save</button>
+              <button type="button" class="btn btn-success"  id="btnnew">Clear</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+      
+        </div>
+      </div>    
+
+      <!-- Edit Modal ------------------------------------------- -->
+      <div id="editModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+      
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Update Information</h4>
+            </div>
+            <div class="modal-body" id="modalBody">
+              
+            </div>
+            <div class="modal-footer">
+              <!-- <button type="button" class="btn btn-success"  id="btnsave" data-dismiss="modal">Save</button> -->
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+      
+        </div>
+      </div> 
+
+      
+</body>
+</html>

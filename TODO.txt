@@ -1,0 +1,25 @@
+login portal to manage students details(KEY FOR MAP).
+
+1. Validation for application access 
+
+2. Create roles and users and store their details in local storage (local storage (get , set ,delete ,clear) , array , map)
+
+3. Manage student profile with Student Name , Address, email , certfification and special achievements ( Map storage should be used)
+
+4. Implement ES6 class to store student info into local .
+
+5. Alter information such as certification , achievements and addresses . (Key based changes )
+
+6. Search based on certification and achievments with the local storage , 
+		--> The search should be stored in separate map in local storage so that it acts as cache .
+
+7. On updation the changes should be done in stored map as well as in the newly created search cache too . 
+
+8. Following validations :- 
+	i -->   email should be unique .
+	ii--> For gender manage separate master collection . 
+	iii-> If the student name is repeated so give a notification of name exist and store the KEY as the first 3 letters and the current date when the entry is created .    
+
+
+
+
